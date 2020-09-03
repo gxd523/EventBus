@@ -10,18 +10,18 @@ import com.eventbus.core.Callback;
 import com.eventbus.impl.Subscriber;
 
 public class MainActivity extends Activity {
-    private Subscriber<String> subscriber;
+    private Subscriber<Event> subscriber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        subscriber = EventBus.register(String.class);
-        subscriber.subscribe(new Callback<String>() {
+        subscriber = EventBus.register(Event.class);
+        subscriber.subscribe(new Callback<Event>() {
             @Override
-            public void call(String s) {
-                Log.d("gxd", "MainActivity.call-->" + s);
+            public void call(Event event) {
+                Log.d("gxd", "MainActivity.call-->" + event.getMsg());
             }
         });
     }
@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        EventBus.unregister(String.class, subscriber);
+        EventBus.unregister(Event.class, subscriber);
         super.onDestroy();
     }
 }

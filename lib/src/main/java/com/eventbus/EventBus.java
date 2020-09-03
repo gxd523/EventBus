@@ -6,26 +6,20 @@ import com.eventbus.impl.Subscriber;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class EventBus {
-    private ConcurrentMap<Class, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
-
-    private EventBus() {
-    }
+public enum  EventBus {
+    INSTANCE;
+    private ConcurrentMap<Class<?>, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
 
     public static <T> Subscriber<T> register(Class<T> clazz) {
-        return EventBus.get().registerObserver(clazz);
+        return EventBus.INSTANCE.registerObserver(clazz);
     }
 
     public static <T> void unregister(Class<T> clazz, Subscriber<T> subscriber) {
-        EventBus.get().unregisterObserver(clazz, subscriber);
+        EventBus.INSTANCE.unregisterObserver(clazz, subscriber);
     }
 
     public static <T> void post(T t) {
-        EventBus.get().postEvent(t);
-    }
-
-    private static EventBus get() {
-        return Holder.INSTANCE;
+        EventBus.INSTANCE.postEvent(t);
     }
 
     private <T> Subscriber<T> registerObserver(Class<T> clazz) {
@@ -51,14 +45,10 @@ public class EventBus {
     }
 
     private <T> void postEvent(T t) {
-        Class clazz = t.getClass();
+        Class<?> clazz = t.getClass();
         Observable<T> observable = observableConcurrentMap.get(clazz);
         if (observable != null) {
             observable.notifyAllObservers(t);
         }
-    }
-
-    private static class Holder {
-        private static final EventBus INSTANCE = new EventBus();
     }
 }
