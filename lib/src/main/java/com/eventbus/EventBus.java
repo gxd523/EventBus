@@ -12,11 +12,23 @@ public class EventBus {
     private EventBus() {
     }
 
-    public static EventBus get() {
+    public static <T> Subscriber<T> register(Class<T> clazz) {
+        return EventBus.get().registerObserver(clazz);
+    }
+
+    public static <T> void unregister(Class<T> clazz, Subscriber<T> subscriber) {
+        EventBus.get().unregisterObserver(clazz, subscriber);
+    }
+
+    public static <T> void post(T t) {
+        EventBus.get().postEvent(t);
+    }
+
+    private static EventBus get() {
         return Holder.INSTANCE;
     }
 
-    public <T> Subscriber<T> register(Class<T> clazz) {
+    private <T> Subscriber<T> registerObserver(Class<T> clazz) {
         Observable<T> observable = observableConcurrentMap.get(clazz);
         if (observable == null) {
             observable = new Observable<>();
@@ -28,7 +40,7 @@ public class EventBus {
         return subscriber;
     }
 
-    public <T> void unregister(Class<T> clazz, Subscriber<T> subscriber) {
+    private <T> void unregisterObserver(Class<T> clazz, Subscriber<T> subscriber) {
         Observable<T> observable = observableConcurrentMap.get(clazz);
         if (observable != null) {
             observable.removeObserver(subscriber);
@@ -38,21 +50,12 @@ public class EventBus {
         }
     }
 
-    public <T> void post(T t) {
+    private <T> void postEvent(T t) {
         Class clazz = t.getClass();
         Observable<T> observable = observableConcurrentMap.get(clazz);
         if (observable != null) {
             observable.notifyAllObservers(t);
         }
-    }
-
-    public int getObservableSize() {
-        return observableConcurrentMap.size();
-    }
-
-    public int getObserverSize(Class clazz) {
-        Observable observable = observableConcurrentMap.get(clazz);
-        return observable != null ? observable.getObserverSize() : 0;
     }
 
     private static class Holder {

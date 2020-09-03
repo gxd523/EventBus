@@ -8,7 +8,7 @@ public class Subscriber<T> implements Observer<T> {
     private Callback<T> callback;
 
     @Override
-    public void update(Subject subject, T t) {
+    public void update(Subject<T> subject, T t) {
         callback.call(t);
     }
 

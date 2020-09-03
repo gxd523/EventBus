@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        subscriber = EventBus.get().register(String.class);
+        subscriber = EventBus.register(String.class);
         subscriber.subscribe(new Callback<String>() {
             @Override
             public void call(String s) {
@@ -27,12 +27,12 @@ public class MainActivity extends Activity {
     }
 
     public void onBtnClick(View view) {
-        EventBus.get().post("a message");
+        EventBus.post("a message");
     }
 
     @Override
     protected void onDestroy() {
-        EventBus.get().unregister(String.class, subscriber);
+        EventBus.unregister(String.class, subscriber);
         super.onDestroy();
     }
 }
