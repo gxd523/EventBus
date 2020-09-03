@@ -3,12 +3,15 @@ package com.eventbus;
 import com.eventbus.impl.Observable;
 import com.eventbus.impl.Subscriber;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-public enum  EventBus {
+/**
+ * 每种事件对应一个被观察者，每个被观察者对应多个观察者
+ */
+public enum EventBus {
     INSTANCE;
-    private ConcurrentMap<Class<?>, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
+    private Map<Class<?>, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
 
     public static <T> Subscriber<T> register(Class<T> clazz) {
         return EventBus.INSTANCE.registerObserver(clazz);

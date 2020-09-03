@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
     }
 
     public void onBtnClick(View view) {
-        EventBus.post("a message");
+        EventBus.post(new Event("a message"));
     }
 
     @Override
