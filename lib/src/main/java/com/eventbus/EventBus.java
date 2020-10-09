@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum EventBus {
     INSTANCE;
-    private Map<Class<?>, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
+    private Map<String, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
 
     public static <T> Subscriber<T> register(Class<T> clazz) {
         return EventBus.INSTANCE.registerObserver(clazz);
@@ -26,10 +26,11 @@ public enum EventBus {
     }
 
     private <T> Subscriber<T> registerObserver(Class<T> clazz) {
-        Observable<T> observable = observableConcurrentMap.get(clazz);
+        String className = clazz.getName();
+        Observable<T> observable = observableConcurrentMap.get(className);
         if (observable == null) {
             observable = new Observable<>();
-            observableConcurrentMap.put(clazz, observable);
+            observableConcurrentMap.put(className, observable);
         }
 
         Subscriber<T> subscriber = new Subscriber<>();
@@ -38,18 +39,19 @@ public enum EventBus {
     }
 
     private <T> void unregisterObserver(Class<T> clazz, Subscriber<T> subscriber) {
-        Observable<T> observable = observableConcurrentMap.get(clazz);
+        String className = clazz.getName();
+        Observable<T> observable = observableConcurrentMap.get(className);
         if (observable != null) {
             observable.removeObserver(subscriber);
             if (observable.getObserverSize() == 0) {
-                observableConcurrentMap.remove(clazz);
+                observableConcurrentMap.remove(className);
             }
         }
     }
 
     private <T> void postEvent(T t) {
-        Class<?> clazz = t.getClass();
-        Observable<T> observable = observableConcurrentMap.get(clazz);
+        String className = t.getClass().getName();
+        Observable<T> observable = observableConcurrentMap.get(className);
         if (observable != null) {
             observable.notifyAllObservers(t);
         }
