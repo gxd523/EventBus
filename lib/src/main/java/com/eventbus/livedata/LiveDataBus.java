@@ -21,10 +21,6 @@ public enum LiveDataBus {
     }
 
     public <T> MutableLiveData<T> with(Class<T> type) {
-        String key = type.getCanonicalName();
-        if (!bus.containsKey(key)) {
-            bus.put(key, new BusMutableLiveData<>());
-        }
-        return (MutableLiveData<T>) bus.get(key);
+        return with(type.getCanonicalName(), type);
     }
 }
