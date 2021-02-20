@@ -1,16 +1,21 @@
 package com.eventbus.sample;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 
 import com.eventbus.EventBus;
 import com.eventbus.core.Callback;
 import com.eventbus.impl.Subscriber;
+import com.eventbus.livedata.LiveDataBus;
 
-public class MainActivity extends Activity {
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+
+public class MainActivity extends LifecycleActivity {
     private Subscriber<Event> subscriber;
+    private MutableLiveData<Event> liveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +26,28 @@ public class MainActivity extends Activity {
         subscriber.subscribe(new Callback<Event>() {
             @Override
             public void call(Event event) {
-                Log.d("gxd", "MainActivity.call-->" + event.getMsg());
+                Log.d("gxd", "EventBus-->" + event.getMsg());
+            }
+        });
+
+        liveData = LiveDataBus.INSTANCE.with(Event.class);
+        liveData.observe(this, new Observer<Event>() {
+            @Override
+            public void onChanged(Event event) {
+                Log.d("gxd", "LiveDataBus-->" + event.getMsg());
             }
         });
     }
 
     public void onBtnClick(View view) {
-        EventBus.post(new Event("a message"));
+        new Thread() {
+            @Override
+            public void run() {
+                SystemClock.sleep(5000);
+                EventBus.post(new Event("a EventBus message"));
+                liveData.postValue(new Event("a LiveData message"));
+            }
+        }.start();
     }
 
     @Override
