@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum EventBus {
     INSTANCE;
-    private Map<String, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
+    private final Map<String, Observable> observableConcurrentMap = new ConcurrentHashMap<>();
 
     public static <T> Subscriber<T> register(Class<T> clazz) {
         return EventBus.INSTANCE.registerObserver(clazz);

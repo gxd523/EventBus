@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Observable<T> implements Subject<T> {
-    private Set<Observer<T>> observerSet = new HashSet<>();
+    private final Set<Observer<T>> observerSet = new HashSet<>();
 
     @Override
     public void addObserver(Observer<T> observer) {
